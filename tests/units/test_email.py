@@ -1,5 +1,3 @@
-import pytest
-
 
 def test_login_with_known_email(client):
 
