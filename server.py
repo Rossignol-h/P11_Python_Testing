@@ -82,8 +82,18 @@ def purchase_places():
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
 
+# ================================================= ROUTE FOR BOARD DISPLAY
 
-# TODO: Add route for points display
+
+@app.route('/board', methods=['GET'])
+def show_board():
+    """
+    Displays the Public Board of all clubs with their points.
+    """
+    return render_template('board.html', all_clubs=clubs)
+
+
+# ================================================= ROUTE FOR LOGOUT
 
 
 @app.route('/logout')
