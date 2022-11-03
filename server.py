@@ -46,22 +46,38 @@ def show_summary():
         return redirect(url_for('index'))
 
 
+# ====================================================== ROUTE FOR BOOK PLACES
+
+
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
+    """
+    Displays :
+        Competition's name and places available
+        & the booking form
+    """
     foundClub = [c for c in clubs if c['name'] == club][0]
     foundCompetition = [c for c in competitions if c['name'] == competition][0]
     if foundClub and foundCompetition:
         return render_template('booking.html',club=foundClub,competition=foundCompetition)
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
+
+
+# ============================================================ ROUTE FOR PURCHASE PLACES
 
 
 @app.route('/purchasePlaces',methods=['POST'])
-def purchasePlaces():
+@app.errorhandler(400)
+def purchase_places():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
+
+    if competition['date'] < current_date:
+        flash("Sorry, this competition is over !")
+        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date), 400
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
