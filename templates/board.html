@@ -1,0 +1,21 @@
+{% block content %}
+    <center>
+        <h1>Display points board</h1>
+        <table>
+            <tr>
+                <th>Club name</th>
+                <th>points available</th>
+            </tr>
+            {%for club in all_clubs %}
+            <tr>
+                <td class="club-name" id="{{club['name']}}">{{club['name']}}</td>
+                <td class="club-points">{{club['points']}}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td> Il n'y pas de données pour ce tableau.</td>
+            </tr>
+            {%endfor%}
+        </table>
+    </center>
+{% endblock %}
