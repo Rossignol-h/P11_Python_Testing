@@ -1,8 +1,10 @@
 import server
 
+
 def test_purchase_futur_competition(client, mocker, clubs_fixture, competitions_fixture):
     """
-        GIVEN a connected secretary's club wants to book places a futur competition.
+        GIVEN a connected secretary's club wants to book places in a futur competition.
+        date of this competition = "2023-02-05 10:00:00".
         WHEN this secretary types: 5 places
         THEN an error message displays, with status code:400 BAD REQUEST.
     """
@@ -17,6 +19,7 @@ def test_purchase_futur_competition(client, mocker, clubs_fixture, competitions_
 def test_purchase_past_competition(client, mocker, clubs_fixture, competitions_fixture):
     """
         GIVEN a connected secretary's club wants to book places in a past competition.
+        date of this competition = "2021-05-12 09:00:00".
         WHEN this secretary types: 5 places
         THEN an error message displays, with status code:400 BAD REQUEST.
     """
