@@ -20,9 +20,9 @@ def test_purchase_with_enough_points(client, mocker, clubs_fixture, competitions
 def test_purchase_not_enough_points(client, mocker, clubs_fixture, competitions_fixture):
     """
         GIVEN a connected secretary's club has 6 points.
-        WHEN this secretary types: 8 places to book for 
+        WHEN this secretary types: 3 places to book for 
         a competition who has 20 places available,
-        THEN response with status code:400 BAD REQUEST.
+        THEN an error message displays, with status code:400 BAD REQUEST.
     """
     mocker.patch.object(server, 'clubs', clubs_fixture)
     mocker.patch.object(server, 'competitions', competitions_fixture)
