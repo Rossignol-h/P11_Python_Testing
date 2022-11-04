@@ -14,6 +14,7 @@ def test_purchase_with_enough_points(client, mocker, clubs_fixture, competitions
     competition = competitions_fixture[0]['name']
     response = client.post('/purchasePlaces', data={'competition': competition, 'club': club, 'places': 3})
     assert response.status_code == 200
+    assert b"Great-booking complete!" in response.data
 
 
 def test_purchase_not_enough_points(client, mocker, clubs_fixture, competitions_fixture):
@@ -29,3 +30,4 @@ def test_purchase_not_enough_points(client, mocker, clubs_fixture, competitions_
     competition = competitions_fixture[0]['name']
     response = client.post('/purchasePlaces', data={'competition': competition, 'club': club, 'places': 8})
     assert response.status_code == 400
+    assert b"Sorry, your club doesn&#39;t have enough points !" in response.data
