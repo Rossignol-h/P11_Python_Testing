@@ -73,14 +73,21 @@ def book(competition,club):
 def purchase_places():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
+    club_points = int(club['points'])
     placesRequired = int(request.form['places'])
 
     if competition['date'] < current_date:
         flash("Sorry, this competition is over !")
         return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date), 400
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    flash('Great-booking complete!')
-    return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
+
+    elif placesRequired > club_points:
+        flash("Sorry, your club doesn't have enough points !")
+        return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
+
+    else:
+        competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+        flash('Great-booking complete!')
+        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
 
 # ================================================= ROUTE FOR BOARD DISPLAY
 
