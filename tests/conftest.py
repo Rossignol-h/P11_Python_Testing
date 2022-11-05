@@ -1,7 +1,7 @@
 import pytest
 import datetime
 from server import app
-
+import server
 
 # ============================================= FIXTURES
 
@@ -84,3 +84,29 @@ def competitions_fixture():
             "numberOfPlaces": "10"
         }
     ]
+
+@pytest.fixture
+def cart_fixture(competitions_fixture, clubs_fixture):
+    return {
+    competition["name"]: {club["name"]: 0 for club in clubs_fixture}
+    for competition in competitions_fixture
+}
+
+
+@pytest.fixture
+def fixture(mocker, clubs_fixture, competitions_fixture, cart_fixture):
+    return [mocker, clubs_fixture, competitions_fixture, cart_fixture]
+
+
+def get_data(fixture, places):
+
+        fixture[0].patch.object(server, 'clubs', fixture[1])
+        fixture[0].patch.object(server, 'competitions', fixture[2])
+        fixture[0].patch.object(server, 'cart', fixture[3])
+        club = fixture[1][0]['name']
+        competition = fixture[2][0]['name']
+        data = {'competition': competition, 'club': club, 'places': places}
+        return data 
+
+def post_request(client, data):
+    return client.post('/purchasePlaces', data=data)

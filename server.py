@@ -2,6 +2,11 @@ import json
 import datetime
 from flask import Flask,render_template,request,redirect,flash,url_for
 
+# ============================================ CONSTANTS
+
+MAX_PLACES = 12
+
+# ============================================ LOAD JSON DATA 
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -14,15 +19,17 @@ def loadCompetitions():
         listOfCompetitions = json.load(comps)['competitions']
         return listOfCompetitions
 
-
-app = Flask(__name__)
-app.secret_key = 'something_special'
-
 competitions = loadCompetitions()
 clubs = loadClubs()
 now = datetime.datetime.now()
 current_date = now.strftime("%Y-%m-%d, %H:%M:%S")
 
+# ============================================ FLASK APP INITIALIZATION
+
+app = Flask(__name__)
+app.secret_key = 'something_special'
+
+# ========================================================= INDEX ROUTE
 
 @app.route('/')
 def index():
@@ -34,13 +41,14 @@ def index():
 @app.route('/showSummary', methods=['POST'])
 def show_summary():
     """
-    Displays the summary of all competitions
-    and points available by the connected club
+        Displays the summary of all competitions
+        and points available of the connected club
     """
 
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
         return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
+
     except IndexError:
         flash("Sorry, this email wasn't found. Please try again with a correct email !!")
         return redirect(url_for('index'))
@@ -67,14 +75,26 @@ def book(competition,club):
 
 # ============================================================ ROUTE FOR PURCHASE PLACES
 
+cart = {
+    competition["name"]: {club["name"]: 0 for club in clubs}
+    for competition in competitions
+}
+
 
 @app.route('/purchasePlaces',methods=['POST'])
 @app.errorhandler(400)
 def purchase_places():
+    """
+        Act like a Controller of the booking form:
+        - By validating it,
+        - Or handeling errors
+    """
+
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     club_points = int(club['points'])
     placesRequired = int(request.form['places'])
+    current_cart = cart[competition["name"]][club["name"]]
 
     if competition['date'] < current_date:
         flash("Sorry, this competition is over !")
@@ -83,13 +103,26 @@ def purchase_places():
     elif placesRequired > club_points:
         flash("Sorry, your club doesn't have enough points !")
         return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
+    
+    elif placesRequired > MAX_PLACES :
+        flash(f"Sorry, you can't book more than {MAX_PLACES} places !")
+        return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
+    
+    elif placesRequired + current_cart > MAX_PLACES :
+        flash(f"""Sorry, you have already booked places, for this competition 
+        and now you have exceeded the limit of {MAX_PLACES} places !""")
+        return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
 
     else:
         competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-        club['points'] = int(club['points'])-placesRequired
-        flash(f'''Great you have booked {placesRequired} places !
-        for {competition['name']}''')
-        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
+
+        club['points'] = int(club['points'])- placesRequired
+
+        cart[competition["name"]][club["name"]] += placesRequired
+
+        flash(f"Great you have booked {placesRequired} places! for {competition['name']}")
+
+        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date, add_to_cart=cart[competition["name"]][club["name"]])
 
 # ================================================= ROUTE FOR BOARD DISPLAY
 
@@ -97,7 +130,7 @@ def purchase_places():
 @app.route('/board', methods=['GET'])
 def show_board():
     """
-    Displays the Public Board of all clubs with their points.
+        Displays the Public Board of all clubs with their points.
     """
     return render_template('board.html', all_clubs=clubs)
 
