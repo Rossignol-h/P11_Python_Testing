@@ -12,10 +12,10 @@ def client():
         yield client
 
 
-@pytest.fixture
-def current_date():
-    now = datetime.datetime.now()
-    return now.strftime("%Y-%m-%d, %H:%M:%S")
+# @pytest.fixture
+# def current_date():
+#     now = datetime.datetime.now()
+#     return now.strftime("%Y-%m-%d, %H:%M:%S")
 
 
 @pytest.fixture
@@ -98,15 +98,31 @@ def fixture(mocker, clubs_fixture, competitions_fixture, cart_fixture):
     return [mocker, clubs_fixture, competitions_fixture, cart_fixture]
 
 
-def get_data(fixture, places):
+def get(fixture, case , places=0):
+    fixture[0].patch.object(server, 'clubs', fixture[1])
+    fixture[0].patch.object(server, 'competitions', fixture[2])
+    fixture[0].patch.object(server, 'cart', fixture[3])
 
-        fixture[0].patch.object(server, 'clubs', fixture[1])
-        fixture[0].patch.object(server, 'competitions', fixture[2])
-        fixture[0].patch.object(server, 'cart', fixture[3])
+    if case == "email":
+
+        email = fixture[1][0]['email']
+        data_email = {'email': email}
+        return data_email
+
+    elif case == "club_competition":
+        
         club = fixture[1][0]['name']
         competition = fixture[2][0]['name']
-        data = {'competition': competition, 'club': club, 'places': places}
-        return data 
+        data_book = {'competition': competition, 'club': club}
+        return data_book
 
-def post_request(client, data):
-    return client.post('/purchasePlaces', data=data)
+    elif case == "club_competition_places":
+        
+        club = fixture[1][0]['name']
+        competition = fixture[2][0]['name']
+        data_purchase_places = {'competition': competition, 'club': club, 'places': places}
+        return data_purchase_places
+
+    elif case == "board":
+
+        return  fixture[1]
