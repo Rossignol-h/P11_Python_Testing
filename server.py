@@ -122,7 +122,7 @@ def purchase_places():
 
         flash(f"Great you have booked {placesRequired} places! for {competition['name']}")
 
-        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date, places=cart[competition["name"]][club["name"]])
+        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date, add_to_cart=cart[competition["name"]][club["name"]])
 
 # ================================================= ROUTE FOR BOARD DISPLAY
 
