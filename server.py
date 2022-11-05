@@ -1,6 +1,7 @@
 import json
 import datetime
-from flask import Flask,render_template,request,redirect,flash,url_for
+from flask import Flask,render_template,request,redirect,flash,url_for, abort
+
 
 # ============================================ CONSTANTS
 
@@ -8,16 +9,27 @@ MAX_PLACES = 12
 
 # ============================================ LOAD JSON DATA 
 
+
 def loadClubs():
-    with open('clubs.json') as c:
-        listOfClubs = json.load(c)['clubs']
-        return listOfClubs
+    try:
+        with open('clubs.json') as c:
+            listOfClubs = json.load(c)['clubs']
+            if len(listOfClubs) == 0:
+                abort(500)
+            return listOfClubs
+    except Exception:
+        abort(500)
 
 
 def loadCompetitions():
-    with open('competitions.json') as comps:
-        listOfCompetitions = json.load(comps)['competitions']
-        return listOfCompetitions
+    try:
+        with open('competitions.json') as comps:
+            listOfCompetitions = json.load(comps)['competitions']
+            if len(listOfCompetitions) == 0:
+                abort(500)
+            return listOfCompetitions
+    except Exception:
+        abort(500)
 
 competitions = loadCompetitions()
 clubs = loadClubs()
@@ -29,6 +41,14 @@ current_date = now.strftime("%Y-%m-%d, %H:%M:%S")
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+def page_internal_error(e):
+    return render_template('500.html'), 500
+
+app.register_error_handler(404, page_not_found)
+app.register_error_handler(500, page_internal_error)
 # ========================================================= INDEX ROUTE
 
 @app.route('/')
