@@ -29,6 +29,10 @@ current_date = now.strftime("%Y-%m-%d, %H:%M:%S")
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+app.register_error_handler(404, page_not_found)
 # ========================================================= INDEX ROUTE
 
 @app.route('/')
