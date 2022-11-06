@@ -12,12 +12,6 @@ def client():
         yield client
 
 
-# @pytest.fixture
-# def current_date():
-#     now = datetime.datetime.now()
-#     return now.strftime("%Y-%m-%d, %H:%M:%S")
-
-
 @pytest.fixture
 def clubs_fixture():
     return [

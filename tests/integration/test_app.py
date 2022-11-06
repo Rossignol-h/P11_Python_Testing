@@ -2,7 +2,7 @@ from conftest import get
 
 
 """
-    Testing a complete senario of a user from :
+    Testing a complete smooth scenario of a user :
      * Home page
      * Login
      * book for a competition

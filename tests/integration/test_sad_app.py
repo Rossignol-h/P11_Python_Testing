@@ -2,7 +2,7 @@ from conftest import get
 import pytest
 
 """
-    Testing a complete worst senario of a user from :
+    Testing a complete worst scenario of a user :
      * Home page : wrong endpoint (/home') doesn't exist.
      * Login : with unknown email
      * book for a unknown competition 
