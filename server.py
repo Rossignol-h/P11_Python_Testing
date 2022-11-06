@@ -84,12 +84,13 @@ def book(competition,club):
         Competition's name and places available
         & the booking form
     """
-    foundClub = [c for c in clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
-    if foundClub and foundCompetition:
+    try:
+        foundClub = [c for c in clubs if c['name'] == club][0]
+        foundCompetition = [c for c in competitions if c['name'] == competition][0]
         return render_template('booking.html',club=foundClub,competition=foundCompetition)
-    else:
-        flash("Something went wrong-please try again")
+
+    except IndexError:
+        flash("Sorry, this club or competition wasn't found !!")
         return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
 
 
@@ -115,6 +116,7 @@ def purchase_places():
     club_points = int(club['points'])
     placesRequired = int(request.form['places'])
     current_cart = cart[competition["name"]][club["name"]]
+    current_places_available = int(competition['numberOfPlaces'])
 
     if competition['date'] < current_date:
         flash("Sorry, this competition is over !")
@@ -131,6 +133,10 @@ def purchase_places():
     elif placesRequired + current_cart > MAX_PLACES :
         flash(f"""Sorry, you have already booked places, for this competition 
         and now you have exceeded the limit of {MAX_PLACES} places !""")
+        return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
+
+    elif placesRequired > current_places_available:
+        flash("Sorry, you book more places than available !")
         return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
 
     else:
