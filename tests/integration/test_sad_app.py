@@ -9,8 +9,8 @@ import pytest
      * purchase places :
             * past competition
             * more than 12 places,
-            * more than club's points,
             * more than competition's places, (book 12 places, this competition has 8)
+            * more than club's points,
 
      * got to see display board with empty data
      * Logout successfully ;)
@@ -42,6 +42,7 @@ def test_sad_app(client, fixture):
     response = client.get(f"/book/{data['competition']}/{data['club']}")
     with pytest.raises(Exception) as exc_info:
         assert str(exc_info.value) == "Sorry, this club or competition wasn&#39;t found !!"
+
 
     data = get(fixture, "past_competition_places", 5)
     response = client.post('/purchasePlaces', data=data)
