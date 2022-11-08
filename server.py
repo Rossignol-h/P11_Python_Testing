@@ -1,6 +1,6 @@
 import json
 import datetime
-from flask import Flask,render_template,request,redirect,flash,url_for, abort
+from flask import Flask, render_template, request, redirect, flash, url_for
 
 
 # ============================================ FLASK APP INITIALIZATION
@@ -8,8 +8,10 @@ from flask import Flask,render_template,request,redirect,flash,url_for, abort
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
+
 def page_not_found(e):
     return render_template('404.html'), 404
+
 
 app.register_error_handler(404, page_not_found)
 
@@ -20,7 +22,7 @@ MAX_PLACES = 12
 PATH_JSON_CLUBS = 'clubs.json'
 PATH_JSON_COMPETITIONS = 'competitions.json'
 
-# ============================================ LOAD JSON DATA 
+# ============================================ LOAD JSON DATA
 
 
 def loadClubs():
@@ -30,7 +32,7 @@ def loadClubs():
                 listOfClubs = json.load(c)['clubs']
                 if listOfClubs and len(listOfClubs) > 0:
                     return listOfClubs
-                else :
+                else:
                     raise Exception("This file is empty, or key not found")
 
     except Exception as error:
@@ -44,11 +46,12 @@ def loadCompetitions():
                 listOfCompetitions = json.load(c)['competitions']
                 if listOfCompetitions and len(listOfCompetitions) > 0:
                     return listOfCompetitions
-                else :
+                else:
                     raise Exception("This file is empty, or key not found")
 
     except Exception as error:
         return str(error)
+
 
 competitions = loadCompetitions()
 clubs = loadClubs()
@@ -86,7 +89,7 @@ def show_summary():
     """
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
-        
+
         if club:
             return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
 
@@ -99,7 +102,7 @@ def show_summary():
 
 
 @app.route('/book/<competition>/<club>')
-def book(competition,club):
+def book(competition, club):
     """
     Displays :
         Competition's name and places available
@@ -108,7 +111,7 @@ def book(competition,club):
     try:
         foundClub = [c for c in clubs if c['name'] == club][0]
         foundCompetition = [c for c in competitions if c['name'] == competition][0]
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+        return render_template('booking.html', club=foundClub, competition=foundCompetition)
 
     except IndexError:
         flash("Sorry, this club or competition wasn't found !!")
@@ -123,7 +126,7 @@ cart = {
 }
 
 
-@app.route('/purchasePlaces',methods=['POST'])
+@app.route('/purchasePlaces', methods=['POST'])
 @app.errorhandler(400)
 def purchase_places():
     """
@@ -146,13 +149,13 @@ def purchase_places():
     elif placesRequired > club_points:
         flash("Sorry, your club doesn't have enough points !")
         return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
-    
-    elif placesRequired > MAX_PLACES :
+
+    elif placesRequired > MAX_PLACES:
         flash(f"Sorry, you can't book more than {MAX_PLACES} places !")
         return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
-    
-    elif placesRequired + current_cart > MAX_PLACES :
-        flash(f"""Sorry, you have already booked places, for this competition 
+
+    elif placesRequired + current_cart > MAX_PLACES:
+        flash(f"""Sorry, you have already booked places, for this competition
         and now you have exceeded the limit of {MAX_PLACES} places !""")
         return render_template('booking.html', club=club, competition=competition, current_date=current_date), 400
 
@@ -163,13 +166,16 @@ def purchase_places():
     else:
         competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
 
-        club['points'] = int(club['points'])- placesRequired
+        club['points'] = int(club['points']) - placesRequired
 
         cart[competition["name"]][club["name"]] += placesRequired
 
         flash(f"Great you have booked {placesRequired} places! for {competition['name']}")
 
-        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date, add_to_cart=cart[competition["name"]][club["name"]])
+        return render_template('welcome.html',
+                               club=club, competitions=competitions,
+                               current_date=current_date,
+                               add_to_cart=cart[competition["name"]][club["name"]])
 
 # ================================================= ROUTE FOR BOARD DISPLAY
 

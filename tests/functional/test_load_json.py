@@ -1,6 +1,7 @@
 import pytest
+import server
 from server import loadClubs, loadCompetitions
-from conftest import get_empty_json, get_wrong_json_path, get
+from conftest import get_empty_json, get_wrong_json_path
 
 
 def test_valid_load_json():
@@ -22,7 +23,7 @@ def test_valid_load_json():
     assert len(competitions) > 0
 
 
-def test_with_empty_json(mocker, empty_clubs_fixture):
+def test_with_empty_json(mocker):
     """
         BACK END TESTING :
         GIVEN empty json files as database for flask app
@@ -36,7 +37,7 @@ def test_with_empty_json(mocker, empty_clubs_fixture):
     assert loadCompetitions() == "This file is empty, or key not found"
 
 
-def test_with_wrong_json_path(client, mocker):
+def test_with_wrong_json_path(mocker):
     """
         BACK END TESTING :
         GIVEN wrong path for json files as database for flask app
@@ -49,7 +50,7 @@ def test_with_wrong_json_path(client, mocker):
     assert loadClubs() == "[Errno 2] No such file or directory: 'fake_club.json'"
     assert loadCompetitions() == "[Errno 2] No such file or directory: 'fake_comp.json'"
 
-import server
+
 def test_index_with_empty_data(client, mocker):
     """
         FRONT END TESTING :
@@ -66,6 +67,3 @@ def test_index_with_empty_data(client, mocker):
 
     assert response.status_code == 500
     assert b'500 page' in response.data
-
-    # assert isinstance(empty_clubs, str)
-    # assert isinstance(empty_competitions, str)

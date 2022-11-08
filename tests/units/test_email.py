@@ -1,5 +1,4 @@
 import pytest
-import server
 from conftest import get
 
 

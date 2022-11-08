@@ -10,6 +10,7 @@ functionnal test of all routes of the app
     */logout'
 """
 
+
 def test_uknown_route(client):
     assert client.get('/fakeRoute').status_code == 404
 

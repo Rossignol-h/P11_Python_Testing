@@ -33,16 +33,6 @@ def clubs_fixture():
 
 
 @pytest.fixture
-def empty_clubs_fixture():
-    return {
-    "competitions": [
-    ],
-    "clubs": [
-    ]
-}
-
-
-@pytest.fixture
 def unknown_club():
     return [
         {
@@ -88,12 +78,13 @@ def competitions_fixture():
         }
     ]
 
+
 @pytest.fixture
 def cart_fixture(competitions_fixture, clubs_fixture):
     return {
-    competition["name"]: {club["name"]: 0 for club in clubs_fixture}
-    for competition in competitions_fixture
-}
+        competition["name"]: {club["name"]: 0 for club in clubs_fixture}
+        for competition in competitions_fixture
+    }
 
 
 @pytest.fixture
@@ -101,7 +92,7 @@ def fixture(mocker, clubs_fixture, competitions_fixture, cart_fixture):
     return [mocker, clubs_fixture, competitions_fixture, cart_fixture]
 
 
-def get(fixture, case , places=0):
+def get(fixture, case, places=0):
     fixture[0].patch.object(server, 'clubs', fixture[1])
     fixture[0].patch.object(server, 'competitions', fixture[2])
     fixture[0].patch.object(server, 'cart', fixture[3])
@@ -144,22 +135,26 @@ def get(fixture, case , places=0):
         return data_purchase_places
 
     elif case == "board":
-        return  fixture[1]
-    
+        return fixture[1]
+
     elif case == "empty_board":
         return fixture[0].patch.object(server, 'clubs', '')
 
-
-FAKE_PATH_JSON_CLUBS = 'fake_club.json'
-FAKE_PATH_JSON_COMPETITIONS = 'fake_comp.json'
+# ================================================== FIXTURE FOR JSON TESTING
 
 
 EMPTY_JSON_PATH = 'tests/functional/empty.json'
+FAKE_PATH_JSON_CLUBS = 'fake_club.json'
+FAKE_PATH_JSON_COMPETITIONS = 'fake_comp.json'
+
 
 def get_empty_json(mocker):
     return mocker.patch.object(
         server, 'PATH_JSON_CLUBS', EMPTY_JSON_PATH), mocker.patch.object(
             server, 'PATH_JSON_COMPETITIONS', EMPTY_JSON_PATH)
 
+
 def get_wrong_json_path(mocker):
-    return mocker.patch.object(server, 'PATH_JSON_CLUBS', FAKE_PATH_JSON_CLUBS), mocker.patch.object(server, 'PATH_JSON_COMPETITIONS', FAKE_PATH_JSON_COMPETITIONS)
+    return mocker.patch.object(server, 'PATH_JSON_CLUBS',
+                               FAKE_PATH_JSON_CLUBS), mocker.patch.object(
+            server, 'PATH_JSON_COMPETITIONS', FAKE_PATH_JSON_COMPETITIONS)

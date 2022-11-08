@@ -1,24 +1,25 @@
-import server
+from conftest import get
 
-def test_display_points_board(client, mocker, clubs_fixture):
+
+def test_display_points_board(client, fixture):
     """
         GIVEN any user,
         WHEN he/she goes to '/board',
         THEN a board will display with all clubs and their points.
     """
-    mocker.patch.object(server, 'clubs', clubs_fixture)
+    clubs = get(fixture, "board")
     response = client.get('/board')
-    assert response.status_code == 200
-    assert f"<td>{clubs_fixture[0]['name']}</td>" in response.data.decode()
+    for club in clubs:
+        assert club['name'] in response.data.decode()
+        assert str(club["points"]) in response.data.decode()
 
 
-def test_board_with_no_data(client, mocker):
+def test_board_with_empty_data(client, fixture):
     """
         GIVEN any user,
         WHEN he/she goes to '/board' with GET method & no data return,
         THEN an error message will display.
     """
-    mocker.patch.object(server, 'clubs', '')
+    get(fixture, "empty_board")
     response = client.get('/board')
-    assert response.status_code == 200
-    assert b'<p> Sorry, this section has no clubs to display</p>' in response.data
+    assert b'Sorry, this section has no clubs to display' in response.data
