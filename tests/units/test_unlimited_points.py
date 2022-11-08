@@ -1,33 +1,29 @@
-import server
+from conftest import get
 
 
-def test_purchase_with_enough_points(client, mocker, clubs_fixture, competitions_fixture):
+def test_purchase_with_enough_points(client, fixture):
     """
-        GIVEN a connected secretary's club has 6 points.
-        WHEN this secretary types: 3 places to book for 
+        GIVEN a connected secretary's club has 15 points.
+        WHEN this secretary types: 10 places to book for 
         a competition who has 20 places available,
         THEN the places are successfully purchased with success message.
     """
-    mocker.patch.object(server, 'clubs', clubs_fixture)
-    mocker.patch.object(server, 'competitions', competitions_fixture)
-    club = clubs_fixture[2]['name']
-    competition = competitions_fixture[0]['name']
-    response = client.post('/purchasePlaces', data={'competition': competition, 'club': club, 'places': 3})
+    data = get(fixture, "club_competition_places", 10)
+    response = client.post('/purchasePlaces', data=data)
+
     assert response.status_code == 200
-    assert b"Great-booking complete!" in response.data
+    assert f"Great you have booked {data['places']} places!" in response.data.decode()
 
 
-def test_purchase_not_enough_points(client, mocker, clubs_fixture, competitions_fixture):
+def test_purchase_not_enough_points(client, fixture):
     """
         GIVEN a connected secretary's club has 6 points.
-        WHEN this secretary types: 8 places to book for 
+        WHEN this secretary types: 10 places to book for 
         a competition who has 20 places available,
         THEN an error message displays, with status code:400 BAD REQUEST.
     """
-    mocker.patch.object(server, 'clubs', clubs_fixture)
-    mocker.patch.object(server, 'competitions', competitions_fixture)
-    club = clubs_fixture[2]['name']
-    competition = competitions_fixture[0]['name']
-    response = client.post('/purchasePlaces', data={'competition': competition, 'club': club, 'places': 8})
+    data = get(fixture, "small_club_places", 10)
+    response = client.post('/purchasePlaces', data=data)
+
     assert response.status_code == 400
     assert b"Sorry, your club doesn&#39;t have enough points !" in response.data

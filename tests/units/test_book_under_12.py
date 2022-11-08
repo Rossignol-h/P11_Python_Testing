@@ -1,4 +1,4 @@
-from conftest import get_data, post_request
+from conftest import get
 
 
 def test_purchase_more_in_one_step(client, fixture):
@@ -8,8 +8,8 @@ def test_purchase_more_in_one_step(client, fixture):
             a competition who has 20 places available,
         THEN an error message displays, with status code:400 BAD REQUEST.
     """
-    data = get_data(fixture, 13)
-    response = post_request(client, data)
+    data = get(fixture, "club_competition_places", 13)
+    response = client.post('/purchasePlaces', data=data)
 
     assert response.status_code == 400
     assert b'Sorry, you can&#39;t book more than 12 places !' in response.data
@@ -27,11 +27,11 @@ def test_purchase_more_in_two_step(client, fixture):
             WHEN this secretary types: 3 places to book for the same competition,
             THEN an error message displays, with status code:400 BAD REQUEST.
     """
-    data = get_data(fixture, 10)
-    response = post_request(client, data)
+    data = get(fixture, "club_competition_places", 10)
+    response = client.post('/purchasePlaces', data=data)
 
-    data2 = get_data(fixture, 3)
-    response = post_request(client, data2)
+    data = get(fixture, "club_competition_places", 3)
+    response = client.post('/purchasePlaces', data=data)
 
     assert response.status_code == 400
     assert b"Sorry, you have already booked places, for this competition" in response.data

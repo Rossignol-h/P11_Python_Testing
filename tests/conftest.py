@@ -1,6 +1,5 @@
 import pytest
-import datetime
-from server import app
+# from server import app
 import server
 
 # ============================================= FIXTURES
@@ -8,7 +7,7 @@ import server
 
 @pytest.fixture
 def client():
-    with app.test_client() as client:
+    with server.app.test_client() as client:
         yield client
 
 
@@ -31,6 +30,16 @@ def clubs_fixture():
             "points": "6"
         }
     ]
+
+
+@pytest.fixture
+def empty_clubs_fixture():
+    return {
+    "competitions": [
+    ],
+    "clubs": [
+    ]
+}
 
 
 @pytest.fixture
@@ -124,6 +133,11 @@ def get(fixture, case , places=0):
         data_purchase_places = {'competition': small_competition, 'club': valid_club, 'places': places}
         return data_purchase_places
 
+    elif case == "small_club_places":
+        small_club = fixture[1][2]['name']
+        data_purchase_places = {'competition': valid_competition, 'club': small_club, 'places': places}
+        return data_purchase_places
+
     elif case == "past_competition_places":
         past_competition = fixture[2][1]['name']
         data_purchase_places = {'competition': past_competition, 'club': valid_club, 'places': places}
@@ -134,3 +148,18 @@ def get(fixture, case , places=0):
     
     elif case == "empty_board":
         return fixture[0].patch.object(server, 'clubs', '')
+
+
+FAKE_PATH_JSON_CLUBS = 'fake_club.json'
+FAKE_PATH_JSON_COMPETITIONS = 'fake_comp.json'
+
+
+EMPTY_JSON_PATH = 'tests/functional/empty.json'
+
+def get_empty_json(mocker):
+    return mocker.patch.object(
+        server, 'PATH_JSON_CLUBS', EMPTY_JSON_PATH), mocker.patch.object(
+            server, 'PATH_JSON_COMPETITIONS', EMPTY_JSON_PATH)
+
+def get_wrong_json_path(mocker):
+    return mocker.patch.object(server, 'PATH_JSON_CLUBS', FAKE_PATH_JSON_CLUBS), mocker.patch.object(server, 'PATH_JSON_COMPETITIONS', FAKE_PATH_JSON_COMPETITIONS)

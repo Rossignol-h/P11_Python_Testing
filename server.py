@@ -3,39 +3,6 @@ import datetime
 from flask import Flask,render_template,request,redirect,flash,url_for, abort
 
 
-# ============================================ CONSTANTS
-
-MAX_PLACES = 12
-
-# ============================================ LOAD JSON DATA 
-
-
-def loadClubs():
-    try:
-        with open('clubs.json') as c:
-            listOfClubs = json.load(c)['clubs']
-            if len(listOfClubs) == 0:
-                abort(500)
-            return listOfClubs
-    except Exception:
-        abort(500)
-
-
-def loadCompetitions():
-    try:
-        with open('competitions.json') as comps:
-            listOfCompetitions = json.load(comps)['competitions']
-            if len(listOfCompetitions) == 0:
-                abort(500)
-            return listOfCompetitions
-    except Exception:
-        abort(500)
-
-competitions = loadCompetitions()
-clubs = loadClubs()
-now = datetime.datetime.now()
-current_date = now.strftime("%Y-%m-%d, %H:%M:%S")
-
 # ============================================ FLASK APP INITIALIZATION
 
 app = Flask(__name__)
@@ -44,16 +11,68 @@ app.secret_key = 'something_special'
 def page_not_found(e):
     return render_template('404.html'), 404
 
-def page_internal_error(e):
-    return render_template('500.html'), 500
-
 app.register_error_handler(404, page_not_found)
-app.register_error_handler(500, page_internal_error)
+
+
+# ============================================ CONSTANTS
+
+MAX_PLACES = 12
+PATH_JSON_CLUBS = 'clubs.json'
+PATH_JSON_COMPETITIONS = 'competitions.json'
+
+# ============================================ LOAD JSON DATA 
+
+
+def loadClubs():
+    try:
+        if PATH_JSON_COMPETITIONS:
+            with open(PATH_JSON_CLUBS) as c:
+                listOfClubs = json.load(c)['clubs']
+                if listOfClubs and len(listOfClubs) > 0:
+                    return listOfClubs
+                else :
+                    raise Exception("This file is empty, or key not found")
+
+    except Exception as error:
+        return str(error)
+
+
+def loadCompetitions():
+    try:
+        if PATH_JSON_COMPETITIONS:
+            with open(PATH_JSON_COMPETITIONS) as c:
+                listOfCompetitions = json.load(c)['competitions']
+                if listOfCompetitions and len(listOfCompetitions) > 0:
+                    return listOfCompetitions
+                else :
+                    raise Exception("This file is empty, or key not found")
+
+    except Exception as error:
+        return str(error)
+
+competitions = loadCompetitions()
+clubs = loadClubs()
+now = datetime.datetime.now()
+current_date = now.strftime("%Y-%m-%d, %H:%M:%S")
+
+
 # ========================================================= INDEX ROUTE
 
+
 @app.route('/')
+@app.errorhandler(500)
 def index():
-    return render_template('index.html')
+    """
+        Displays home page of the app.
+        if no data is available then return :
+            - status code 500 and the appropriate template (500.html)
+    """
+
+    if isinstance(clubs, list) and isinstance(competitions, list):
+        return render_template('index.html')
+    else:
+        return render_template('500.html'), 500
+
 
 # =========================================================== SUMMARY PAGE
 
@@ -63,11 +82,13 @@ def show_summary():
     """
         Displays the summary of all competitions
         and points available of the connected club
+        if email is not found return error message
     """
-
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
-        return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
+        
+        if club:
+            return render_template('welcome.html', club=club, competitions=competitions, current_date=current_date)
 
     except IndexError:
         flash("Sorry, this email wasn't found. Please try again with a correct email !!")
@@ -82,7 +103,7 @@ def book(competition,club):
     """
     Displays :
         Competition's name and places available
-        & the booking form
+        & the booking form or displays an error message.
     """
     try:
         foundClub = [c for c in clubs if c['name'] == club][0]

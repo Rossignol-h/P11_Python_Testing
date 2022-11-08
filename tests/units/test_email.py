@@ -1,22 +1,22 @@
 import pytest
 import server
+from conftest import get
 
 
-def test_login_with_known_email(client, mocker, clubs_fixture):
+def test_login_with_known_email(client, fixture):
     """
         GIVEN a user not connected
         WHEN a user types in an email found in the system
         THEN this user is successfully connected
     """
-    mocker.patch.object(server, 'clubs', clubs_fixture)
-    response = client.post('/showSummary', data=clubs_fixture[0])
+    email = get(fixture, "email")
+    response = client.post('/showSummary', data=email)
     assert response.status_code == 200
-    assert response.data.decode().find('Welcome to the GUDLFT Registration Portal!')
 
 
 def test_login_with_unknown_email(client, unknown_club):
     """
-        GIVEN a user not connected
+        GIVEN a not connected user
         WHEN a user types in an email which is not found in the system
         THEN the error is caught and handled with error message
     """
