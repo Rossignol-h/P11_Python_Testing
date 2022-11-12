@@ -10,6 +10,7 @@ functionnal test of all routes of the app
     */logout'
 """
 
+
 def test_uknown_route(client):
     assert client.get('/fakeRoute').status_code == 404
 
@@ -41,7 +42,7 @@ def test_route_showSummary(client, fixture):
 
 def test_route_book(client, fixture):
 
-    data = get(fixture, "club_competition")
+    data = get(fixture, "valid_club_competition")
     response = client.get(f"/book/{data['competition']}/{data['club']}")
 
     assert response.status_code == 200

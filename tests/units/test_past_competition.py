@@ -15,7 +15,6 @@ def test_purchase_futur_competition(client, fixture):
     assert f"Great you have booked {data['places']} places!" in response.data.decode()
 
 
-
 def test_purchase_past_competition(client, fixture):
     """
         GIVEN a connected secretary's club wants to book places in a past competition.

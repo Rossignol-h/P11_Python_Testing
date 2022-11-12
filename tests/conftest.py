@@ -1,14 +1,16 @@
 import pytest
-# from server import app
 import server
 
-# ============================================= FIXTURES
+# ============================================= FIXTURES CLIENT TESTING
 
 
 @pytest.fixture
 def client():
     with server.app.test_client() as client:
         yield client
+
+
+# ================================================== FIXTURE FOR CLUBS TESTING
 
 
 @pytest.fixture
@@ -32,35 +34,7 @@ def clubs_fixture():
     ]
 
 
-@pytest.fixture
-def empty_clubs_fixture():
-    return {
-    "competitions": [
-    ],
-    "clubs": [
-    ]
-}
-
-
-@pytest.fixture
-def unknown_club():
-    return [
-        {
-            "name": "Fake club",
-            "email": "sam@email.co",
-            "points": "12"
-        },
-        {
-            "name": "Unknown Club",
-            "email": "jim@gmail.com",
-            "points": "9"
-        },
-        {
-            "name": "invisible Club",
-            "email": "sarah@yahoo.co.uk",
-            "points": "16"
-        }
-    ]
+# ================================================== FIXTURE FOR COMPETITIONS TESTING
 
 
 @pytest.fixture
@@ -88,12 +62,19 @@ def competitions_fixture():
         }
     ]
 
+
+# ================================================== FIXTURE TO AVOID BOOKING MORE THAN 12 PLACES
+
+
 @pytest.fixture
 def cart_fixture(competitions_fixture, clubs_fixture):
     return {
-    competition["name"]: {club["name"]: 0 for club in clubs_fixture}
-    for competition in competitions_fixture
-}
+        competition["name"]: {club["name"]: 0 for club in clubs_fixture}
+        for competition in competitions_fixture
+    }
+
+
+# ================================================== FIXTURE TO AVOID REPETITIONS OF CALLING FIXTURE IN PARAMETERS
 
 
 @pytest.fixture
@@ -101,7 +82,10 @@ def fixture(mocker, clubs_fixture, competitions_fixture, cart_fixture):
     return [mocker, clubs_fixture, competitions_fixture, cart_fixture]
 
 
-def get(fixture, case , places=0):
+# ================================================== FIXTURE TO AVOID REPETITIONS IN FUNCTIONS TESTING
+
+
+def get(fixture, case, places=0):
     fixture[0].patch.object(server, 'clubs', fixture[1])
     fixture[0].patch.object(server, 'competitions', fixture[2])
     fixture[0].patch.object(server, 'cart', fixture[3])
@@ -117,11 +101,11 @@ def get(fixture, case , places=0):
     elif case == "wrong_email":
         return {"email": "unknown_email@gmail.com"}
 
-    elif case == "club_competition":
+    elif case == "valid_club_competition":
         data_book = {'competition': valid_competition, 'club': valid_club}
         return data_book
 
-    elif case == "club_unknown-competition":
+    elif case == "club_unknown_competition":
         return {'competition': "Black Race", 'club': valid_club}
 
     elif case == "club_competition_places":
@@ -144,22 +128,27 @@ def get(fixture, case , places=0):
         return data_purchase_places
 
     elif case == "board":
-        return  fixture[1]
-    
+        return fixture[1]
+
     elif case == "empty_board":
         return fixture[0].patch.object(server, 'clubs', '')
 
 
-FAKE_PATH_JSON_CLUBS = 'fake_club.json'
-FAKE_PATH_JSON_COMPETITIONS = 'fake_comp.json'
+# ================================================== FIXTURE FOR JSON TESTING
 
 
 EMPTY_JSON_PATH = 'tests/functional/empty.json'
+FAKE_PATH_JSON_CLUBS = 'fake_club.json'
+FAKE_PATH_JSON_COMPETITIONS = 'fake_comp.json'
+
 
 def get_empty_json(mocker):
     return mocker.patch.object(
         server, 'PATH_JSON_CLUBS', EMPTY_JSON_PATH), mocker.patch.object(
             server, 'PATH_JSON_COMPETITIONS', EMPTY_JSON_PATH)
 
+
 def get_wrong_json_path(mocker):
-    return mocker.patch.object(server, 'PATH_JSON_CLUBS', FAKE_PATH_JSON_CLUBS), mocker.patch.object(server, 'PATH_JSON_COMPETITIONS', FAKE_PATH_JSON_COMPETITIONS)
+    return mocker.patch.object(server, 'PATH_JSON_CLUBS',
+                               FAKE_PATH_JSON_CLUBS), mocker.patch.object(
+            server, 'PATH_JSON_COMPETITIONS', FAKE_PATH_JSON_COMPETITIONS)
