@@ -44,6 +44,7 @@ def loadCompetitions():
         if PATH_JSON_COMPETITIONS:
             with open(PATH_JSON_COMPETITIONS) as c:
                 listOfCompetitions = json.load(c)['competitions']
+                listOfCompetitions.sort(key=lambda x: x["date"], reverse=True)
                 if listOfCompetitions and len(listOfCompetitions) > 0:
                     return listOfCompetitions
                 else:

@@ -13,13 +13,14 @@ def test_login_with_known_email(client, fixture):
     assert response.status_code == 200
 
 
-def test_login_with_unknown_email(client, unknown_club):
+def test_login_with_unknown_email(client, fixture):
     """
         GIVEN a not connected user
         WHEN a user types in an email which is not found in the system
         THEN the error is caught and handled with error message
     """
-    response = client.post('/showSummary', data=unknown_club[0])
+    email = get(fixture, "wrong_email")
+    response = client.post('/showSummary', data=email)
     assert response.status_code == 302
     with pytest.raises(Exception) as exc_info:
         assert str(exc_info.value) == "Sorry, this email wasn't found. Please try again with a correct email !!"

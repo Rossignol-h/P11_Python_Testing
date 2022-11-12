@@ -25,7 +25,7 @@ def test_app(client, fixture):
     response = client.post('/showSummary', data=email)
     assert response.status_code == 200
 
-    data = get(fixture, "club_competition")
+    data = get(fixture, "valid_club_competition")
     response = client.get(f"/book/{data['competition']}/{data['club']}")
     assert response.status_code == 200
 

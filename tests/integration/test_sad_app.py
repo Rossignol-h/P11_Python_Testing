@@ -40,7 +40,7 @@ def test_sad_app(client, fixture):
 
 # ================================================== BOOK WITH UNKNON COMPETITION
 
-    data = get(fixture, "club_unknown-competition")
+    data = get(fixture, "club_unknown_competition")
     response = client.get(f"/book/{data['competition']}/{data['club']}")
     with pytest.raises(Exception) as exc_info:
         assert str(exc_info.value) == "Sorry, this club or competition wasn&#39;t found !!"
