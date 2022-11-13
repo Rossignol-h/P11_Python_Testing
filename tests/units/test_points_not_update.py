@@ -13,4 +13,4 @@ def test_points_update_correctly(client, fixture):
     response = client.post('/purchasePlaces', data=data)
 
     assert response.status_code == 200
-    assert f"Points available: {fixture[1][0]['points']}" in response.data.decode()
+    assert f"Points available : {fixture[1][0]['points']}" in response.data.decode()

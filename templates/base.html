@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GUDLFT" />
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="GUDLFT" />
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="GUDLFT" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rossignol-h.github.io/" />
+    <meta property="og:image" content="http://example.com/image.jpg" />
+    <meta property="og:description" content="GUDLFT" />
+
+    <!-- Customize css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <title>GUDLFT</title>
+</head>
+
+<body>
+    <header class="index-header">
+        <nav class="nav-container">
+            <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="logo GUDLFT" />
+            <ul class="nav-item">
+    
+                <li><a href="{{url_for('index')}}">Home</a></li>
+                <li><a href="{{url_for('show_board')}}">Board</a></li>
+                <li><a href="{{url_for('logout')}}">Logout</a></li>
+            </ul>
+        </nav>
+        <figure>
+        </figure>
+    </header>
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>

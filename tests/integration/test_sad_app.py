@@ -28,7 +28,7 @@ def test_sad_app(client, fixture):
 
     response = client.get('/home')
     assert response.status_code == 404
-    assert b'404 error page' in response.data
+    assert b'ERROR 404' in response.data
 
 # ================================================== LOGIN WITH UNKNON EMAIL
 
