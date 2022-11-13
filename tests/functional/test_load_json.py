@@ -66,4 +66,4 @@ def test_index_with_empty_data(client, mocker):
     print(f'{response.status_code}, data reponse = {response.data.decode()}')
 
     assert response.status_code == 500
-    assert b'500 page' in response.data
+    assert b'ERROR 500' in response.data

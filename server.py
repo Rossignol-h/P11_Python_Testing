@@ -15,7 +15,6 @@ def page_not_found(e):
 
 app.register_error_handler(404, page_not_found)
 
-
 # ============================================ CONSTANTS
 
 MAX_PLACES = 12

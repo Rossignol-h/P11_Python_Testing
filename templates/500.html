@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>500 page</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
 
 <main class="500-container">
-    <h1>Sorry, It's not your fault, keep calm </h1> 
+    <h1>ERROR 500</h1>
+    <h2>Sorry, It's not your fault, keep calm </h2> 
     <p>Try to go back home or please contact us</p> 
-    <div class="500-btn">
-            <a href="{{url_for('logout')}}">Try Home page</a>
-            <a href="">Contact us</a>
-    </div>
+    <button class="btn">
+        <a href="{{url_for('logout')}}">Try Home page</a>
+    </button>
+    <button class="btn">
+        <a href="">Contact us</a>
+    </button>
 </main>
-</body>
-</html>
+{% endblock content %}
